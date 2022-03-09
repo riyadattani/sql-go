@@ -21,6 +21,15 @@ func main() {
 		log.Fatal(err)
 	}
 
+	//transaction
+	tx := db.MustBegin()
+	m := Movies{
+		Title: "Batman",
+		Year:  2022,
+	}
+	tx.Exec("insert into movies (title, year) values ($1, $2)", m.Title, m.Year)
+	tx.Commit()
+
 	movies := []Movies{}
 	err = db.Select(&movies, "select * from movies")
 	if err != nil {
