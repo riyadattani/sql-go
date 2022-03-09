@@ -13,6 +13,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	result, err := db.Exec("insert into movies (title, year) VALUES ($1, $2)", "Harry potter 3", 2004)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	affected, _ := result.RowsAffected()
+	log.Printf("Rows affected %d", affected)
+
 	var title string
 	rows, err := db.Query("select title from movies")
 	for rows.Next() {
