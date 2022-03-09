@@ -7,6 +7,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
+type Movies struct {
+	id    int
+	title string
+	year  int
+}
+
 func main() {
 	db, err := sql.Open("postgres", "postgres://postgres:password@localhost:5432/postgres?sslmode=disable")
 	if err != nil {
@@ -14,22 +20,22 @@ func main() {
 	}
 
 	// insert a row
-	result, err := db.Exec("insert into movies (title, year) VALUES ($1, $2)", "Harry potter 1", 2001)
-	if err != nil {
-		log.Fatal(err)
-	}
+	//result, err := db.Exec("insert into movies (title, year) VALUES ($1, $2)", "Lord of the rings 2", 2003)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
-	affected, _ := result.RowsAffected()
-	log.Printf("Rows affected %d", affected)
+	//affected, _ := result.RowsAffected()
+	//log.Printf("Rows affected %d", affected)
 
 	// query for rows
-	var title string
-	rows, err := db.Query("select title from movies")
+	rows, err := db.Query("select * from movies")
 	for rows.Next() {
-		if err = rows.Scan(&title); err != nil {
+		movies := Movies{}
+		if err = rows.Scan(&movies.id, &movies.title, &movies.year); err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("title is %s", title)
+		log.Printf("movie is %v", movies)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -37,6 +43,7 @@ func main() {
 	}
 
 	// query for a single row
+	var title string
 	row := db.QueryRow("select title from movies where id=1")
 	row.Scan(&title)
 	log.Printf("movie with id 1: %s", title)
